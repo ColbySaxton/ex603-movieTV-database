@@ -1,0 +1,19 @@
+# Unit 1 Analysis
+
+## Modeling Justification
+
+This modeling application is for a database design for movies/tv shows. There were a few key decisions that had to be decided in the design. First lets start with the user table. The user will have a userId primary key which is a uuid value. This primary key cannot be null and it must be unique. The user table also has a username. This will be a string field that a user must have on the record, it cannot be null. It also has to be unique because each user record must be identified by their username and they cannot be understood as another user. On delete, the delete will cascade down to all child records because when a user is deleted, all the child records will be orphaned and must be deleted as well.
+
+Next is the movie table. This table will have a movieId primary key which is a uuid value. The primary key cannot be null and it must be unique. The movie will also have a name. Multiple movies can have the same name, so it is not unique, but it cannot be null. Last is the activity flag which is a boolean field. I am still understanding what that field's purpose is. When a movie is deleted, it must delete all child records as well because otherwise the child records will be orphaned.
+
+Next is the genres table. This table will have a genreId primary key which is a uuid value. The primary key cannot be null and it must be unique. The genre will also have a name. The name must be unique and it cannot be null. The genre will be restricted from being deleted as a genre is a global record which many related records rely on, which means it must be restricted from being deleted.
+
+Next is the movie genres table. This table will have 2 foreign keys. One is the movieId which is a foreign key for a movie and it will also be one half of the primary key for a movie genre record. The other foreign key is a genreId which will be the other half of the primary key for a movie genre record. This can be deleted.
+
+Next is the scores table. This table will have one field that will act as its foreign key and primary key, the movieId. This is because the score has a one to one relationship with the movie object because one movie will have one aggregate score. The other field is a decimal value called average score which can be null if the movie does not have any ratings. This can be deleted.
+
+Last is the ratings table. The ratings table will have 2 foreign keys. One is the userId which is a foreign key for a user and it will also be one half of the primary key for a ratings record. The other is a movieId which is a foreign key for a movie and it will be the other half of the primary key for a ratings record. Each of these fields must not be null and the aggregate of them must be unique. There is also a created date datetime field that must not be null. And last will be a rating that will be a numerical integer from 1 to 10 and it cannot be null. A rating can be deleted.
+
+## Reflection
+
+One decision I made that I feel confident about is regarding restricting the ability for a genre record to be deleted. I can see another designer allowing a genre to be deleted, but I don't believe that can be the case. the main reason for this, is a genre is a fundamental value that cannot change. If you can delete a genre record, than a movie genre record will either 1. need to also be deleted and then remapped to a corrected genre 2. the movie genre record will exist with a null genre value. I think both of these solutions are poor. First of all, if we want to change a movie's association to a genre, we can just change/delete the movie genre record without touching the genre record. Second, having a movie genre record without a genre is poor design as the meaning and value of that record is lost if it does not have one of its foreign keys and one half of its primary key. This is why i determined it is safest design to restrict deletion to the genre object in this schema design.

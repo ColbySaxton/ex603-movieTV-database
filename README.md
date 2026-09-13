@@ -2,8 +2,6 @@
 Colby Saxton
 
 This is a Database for ex603 class for Movies/TV Shows.
-<<<<<<< Updated upstream
-=======
 
 This is a platform for a user to go into and create ratings for movies and view the aggregate scores for movies based on all ratings for that particular movie. This will also show a user the genre of a movie.
 
@@ -13,4 +11,3 @@ This will do that by creating a database schema with 5 different objects. First 
 
 
 Formatting and Mermaid ERD diagram syntax was aided by Github Copilot Free version.
->>>>>>> Stashed changes
