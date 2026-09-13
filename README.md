@@ -1,2 +1,4 @@
 # ex603-movieTV-database
-Database for ex603 class for Movies/TV Shows.
+Colby Saxton
+
+This is a Database for ex603 class for Movies/TV Shows.
