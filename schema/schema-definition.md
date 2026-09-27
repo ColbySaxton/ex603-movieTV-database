@@ -1,55 +1,75 @@
-# Database Schema:
+# Database Schema
 
-## Table Definitions:
+This document describes the Schema Design for a Movie/TV user score management application.
+
+## Tables
 
 ### `users`
-**Purpose:** Stores core user account credentials.
 
-| Column Name | Data Type | Description |
+Stores core user account credentials.
+
+| Column | Definition | Description |
 | :--- | :--- | :--- |
-| `UserId` | `UUID` | Unique identifier for the account owner. |
-| `Username` | `VARCHAR(255)` | User's user name. |
+| `user_id` | `INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY` | Automatically generated unique identifier for each user. |
+| `display_name` | `VARCHAR(40) NOT NULL` | User's display name. |
+| `email` | `VARCHAR(50) NOT NULL UNIQUE` | User's required, unique email address. |
+| `joined_at` | `TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP` | Time the user record is created; defaults to the current timestamp. |
 
 ### `movies`
-**Purpose:** Store movie information.
 
-| Column Name | Data Type | Description |
+Stores information about movies.
+
+| Column | Definition | Description |
 | :--- | :--- | :--- |
-| `MovieId` | `UUID` | Unique movie ID. |
-| `Name` | `VARCHAR(255)` | Name of movie. |
-| `ActivityFlag` | `BOOLEAN` | Activity flag for the movie. |
+| `movie_id` | `INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY` | Automatically generated unique identifier for each movie. |
+| `title` | `VARCHAR(100) NOT NULL` | Movie title. |
+| `release_year` | `INTEGER NOT NULL` | Movie release year; constrained to be 1888 or later by `chk_release_year_range`. |
 
 ### `genres`
-**Purpose:** Store genre information.
 
-| Column Name | Data Type | Description |
+Stores movie genres.
+
+| Column | Definition | Description |
 | :--- | :--- | :--- |
-| `GenreId` | `UUID` | Unique genre ID. |
-| `Name` | `VARCHAR(255)` | Name of genre. |
+| `genre_id` | `INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY` | Automatically generated unique identifier for each genre. |
+| `genre_name` | `VARCHAR(50) NOT NULL UNIQUE` | Required genre name, unique across the table. |
 
 ### `scores`
-**Purpose:** Store aggregate score of all ratings for a movie.
 
-| Column Name | Data Type | Description |
+Stores an average score for a movie. Its primary key allows at most one score row per movie.
+
+| Column | Definition | Description |
 | :--- | :--- | :--- |
-| `MovieId` | `UUID` | Unique movie ID that also acts as primary key for this one to one relationship. |
-| `AvgScore` | `DECIMAL` | Average score of all ratings for a particular movie. |
+| `movie_id` | `INTEGER NOT NULL PRIMARY KEY` | Movie identifier; primary key constraint is named `pk_movie_id`. It also references `movies(movie_id)` with `ON DELETE CASCADE`. |
+| `avg_score` | `NUMERIC(3, 1) NOT NULL` | Average score, constrained to the range 0 through 10 by `chk_avg_score_range`. |
+
+The SQL declares the `movie_id` foreign key twice: once inline and once as the named constraint `fk_movie_id`. Both reference `movies(movie_id)` with `ON DELETE CASCADE`; the second declaration is redundant.
 
 ### `movie_genres`
-**Purpose:** Connecting object that links a movie to a genre.
 
-| Column Name | Data Type | Description |
+Associates movies with genres in a many-to-many relationship.
+
+| Column | Definition | Description |
 | :--- | :--- | :--- |
-| `GenreId` | `UUID` | Unique genre ID. Aggregates with movie ID to create primary key. |
-| `MovieId` | `VARCHAR(255)` | Unique movie ID. Aggregates with genre ID to create primary key. |
+| `movie_id` | `INTEGER NOT NULL` | References `movies(movie_id)` with `ON DELETE CASCADE`. |
+| `genre_id` | `INTEGER NOT NULL` | References `genres(genre_id)` with `ON DELETE CASCADE`. |
+
+The composite primary key `pk_movie_genre` uses (`movie_id`, `genre_id`), preventing duplicate links between the same movie and genre.
 
 ### `ratings`
-**Purpose:** Store a user's rating for a movie.
 
-| Column Name | Data Type | Description |
+Stores individual user ratings for movies.
+
+| Column | Definition | Description |
 | :--- | :--- | :--- |
-| `UserId` | `UUID` | Unique user ID. Aggregates with movie ID to create primary key. |
-| `MovieId` | `VARCHAR(255)` | Unique movie ID. Aggregates with user ID to create primary key. |
-| `CreatedDate` | `DATETIME` | Datetime of created rating. |
-| `Rating` | `INT` | Rating a user gives a movie on a scale of 0-10. |
+| `rating_id` | `INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY` | Automatically generated unique identifier for each rating. |
+| `user_id` | `INTEGER NOT NULL` | References `users(user_id)` through `fk_user_id` with `ON DELETE CASCADE`. |
+| `movie_id` | `INTEGER NOT NULL` | References `movies(movie_id)` through `fk_movie_id` with `ON DELETE CASCADE`. |
+| `score` | `NUMERIC(3, 1) NOT NULL` | Rating score, constrained to the range 0 through 10 by `chk_score_range`. |
 
+## Relationships
+
+- A user can have many ratings; each rating references one user. Deleting a user cascades to their ratings.
+- A movie can have many ratings; each rating references one movie. Deleting a movie cascades to its ratings.
+- Movies and genres have a many-to-many relationship through `movie_genres`. Deleting a movie or genre removes the corresponding link rows.
+- A movie can have at most one `scores` row because `scores.movie_id` is its primary key. Deleting the movie cascades to its score row.
