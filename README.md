@@ -9,6 +9,7 @@ This will do that by creating a database schema with 5 different objects. First 
 
 ![ERD Diagram](schema/erd.png)
 
+<<<<<<< HEAD
 # Database Schema
 
 This document describes the Schema Design for a Movie/TV user score management application.
@@ -45,3 +46,7 @@ Stores individual user ratings for movies.
 - A movie can have many ratings; each rating references one movie. Deleting a movie cascades to its ratings.
 - Movies and genres have a many-to-many relationship through `movie_genres`. Deleting a movie or genre removes the corresponding link rows.
 - A movie can have at most one `scores` row because `scores.movie_id` is its primary key. Deleting the movie cascades to its score row.
+=======
+
+Formatting and Mermaid ERD diagram syntax was aided by Github Copilot Free version.
+>>>>>>> d5395cc59df1fd163d06216fc3800317f9066160
