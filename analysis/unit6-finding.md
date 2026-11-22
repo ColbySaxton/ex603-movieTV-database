@@ -1,0 +1,7 @@
+# Unit 6 Findings
+
+## Is the failure problem getting worse?
+
+Overall, the failure problem is not getting worse. Taking a look at the failure percentage by month, the percentage hovers between 29% and 16% per month with now clear trend. There are 2 main outliers to call out. The first outlier is the month of June which produced a failure rate of 43% which was a 350% increase over the previous month. The second main outlier was the month of April which produced a failure rate of 0%, a 100% decrease from the previous month. That being said, these values look like outliers and nothing more as the values surrounding those outliers bounced back to the relative norms without any clear trends. These claims are backed up by the query rain in q6_3 which saw the error failure percentage month over month and comparison to the previous month to determine the percent changed.
+
+Next quarter, the team should be aware of just some general trends. First of all, ratings are more frequent in the months of January and February, with clear dips in March and April. There seems to be a correlation between trends in the temperature with movie watching and reviews. Another uptick can be seen during the main summer months of June, July and August, which can be attributed to too hot weather, and the lack of other options since most sporting events do not occur during the summer. These are backed up by looking at the query in q6_2 which takes a look at the 3 month moving average of the minutes watched per month.
